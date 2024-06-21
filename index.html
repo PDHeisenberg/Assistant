@@ -5,68 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Assistant</title>
     <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            max-width: 600px; 
-            margin: 0 auto; 
-            padding: 20px; 
-            background-color: #f0f0f0;
-        }
-        #chat-container { 
-            height: 400px; 
-            overflow-y: auto; 
-            border: 1px solid #ddd; 
-            padding: 10px; 
-            margin-bottom: 10px; 
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        #user-input { 
-            width: 75%; 
-            padding: 10px; 
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        #send-button { 
-            width: 20%; 
-            padding: 10px; 
-            background-color: #4CAF50; 
-            color: white; 
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        #send-button:hover {
-            background-color: #45a049;
-        }
-        .message {
-            margin-bottom: 10px;
-            padding: 8px 12px;
-            border-radius: 18px;
-            max-width: 80%;
-            clear: both;
-        }
-        .user-message {
-            background-color: #DCF8C6;
-            float: right;
-        }
-        .assistant-message {
-            background-color: #E5E5EA;
-            float: left;
-        }
-        .system-message { 
-            color: #888; 
-            font-style: italic; 
-            text-align: center;
-            margin: 10px 0;
-            clear: both;
-        }
+        /* ... (keep your existing styles) ... */
     </style>
 </head>
 <body>
     <div id="chat-container">
-        <p class="system-message">Welcome to the chat assistant! How can I help you today?</p>
+        <p class="system-message">Welcome! How can I assist you today?</p>
     </div>
     <input type="text" id="user-input" placeholder="Type your message...">
     <button id="send-button">Send</button>
@@ -88,7 +32,7 @@
                 userInput.value = '';
                 
                 try {
-                    const response = await fetch('http://localhost:3000/chat', {
+                    const response = await fetch('/.netlify/functions/chat', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
