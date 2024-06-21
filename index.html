@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat with Parth's Assistant</title>
+    <title>Chat Assistant</title>
     <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@1,800,500,100,700,400,300,200,900&display=swap" rel="stylesheet">
     <style>
         body, html {
@@ -12,7 +12,6 @@
             height: 100%;
             font-family: 'Cabinet Grotesk', sans-serif;
             color: #333333;
-            background-color: #F9FFEF;
         }
         .chat-container {
             max-width: 800px;
@@ -20,16 +19,7 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 40px); /* Subtract padding */
-        }
-        .chat-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .chat-header h1 {
-            font-size: 24px;
-            font-weight: 600;
-            color: #333333;
+            height: 100vh;
         }
         #chat-messages {
             flex-grow: 1;
@@ -66,7 +56,6 @@
         }
         .input-area {
             display: flex;
-            margin-top: 20px;
             background-color: #FFFFFF;
             border-radius: 32px;
             padding: 5px;
@@ -104,9 +93,6 @@
 </head>
 <body>
     <div class="chat-container">
-        <div class="chat-header">
-            <h1>Chat with Parth's Assistant</h1>
-        </div>
         <div id="chat-messages"></div>
         <div class="input-area">
             <input type="text" id="user-input" placeholder="Type your message here...">
@@ -115,7 +101,55 @@
     </div>
 
     <script>
-        // ... (JavaScript remains the same as in the previous version)
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+
+        // Initial greeting message
+        window.onload = function() {
+            addMessageToChat('Assistant', "Hello! Welcome to Parth's website. I'm his AI assistant. How can I help you today?", 'assistant-message');
+        };
+
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (message) {
+                addMessageToChat('You', message, 'user-message');
+                userInput.value = '';
+                
+                try {
+                    const response = await fetch('/.netlify/functions/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ message }),
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
+                    const data = await response.json();
+                    addMessageToChat('Assistant', data.reply, 'assistant-message');
+                } catch (error) {
+                    console.error('Error:', error);
+                    addMessageToChat('System', 'Sorry, there was an error processing your request.', 'assistant-message');
+                }
+            }
+        }
+
+        function addMessageToChat(sender, message, className) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${className}`;
+            messageElement.innerHTML = `<span>${message}</span>`;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
     </script>
 </body>
 </html>
