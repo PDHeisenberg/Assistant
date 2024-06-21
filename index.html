@@ -60,9 +60,15 @@
         }
         .predefined-messages {
             display: flex;
-            flex-wrap: wrap;
+            overflow-x: auto;
             gap: 10px;
             margin-bottom: 20px;
+            padding-bottom: 10px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .predefined-messages::-webkit-scrollbar {
+            display: none;
         }
         .predefined-message {
             background-color: #F5F5F5;
@@ -72,6 +78,7 @@
             font-size: 14px;
             cursor: pointer;
             transition: background-color 0.3s;
+            white-space: nowrap;
         }
         .predefined-message:hover {
             background-color: #CCFF6F;
@@ -204,7 +211,6 @@
                 addMessageToChat('You', message, 'user-message');
                 userInput.value = '';
                 
-                // Show loading bubble
                 const loadingBubble = document.createElement('div');
                 loadingBubble.className = 'loading-bubble';
                 loadingBubble.innerHTML = '<div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div>';
@@ -225,18 +231,12 @@
                     }
                     
                     const data = await response.json();
-                    
-                    // Remove loading bubble
                     chatMessages.removeChild(loadingBubble);
-                    
                     addMessageToChat('Assistant', data.reply, 'assistant-message');
                 } catch (error) {
                     console.error('Error:', error);
-                    
-                    // Remove loading bubble
                     chatMessages.removeChild(loadingBubble);
-                    
-                    addMessageToChat('System', 'Sorry, there was an error processing your request.', 'assistant-message');
+                    addMessageToChat('Assistant', 'I apologize, but I encountered an issue while processing your request. Could you please try again?', 'assistant-message');
                 }
             }
         }
