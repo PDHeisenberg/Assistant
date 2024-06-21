@@ -1,0 +1,9 @@
+{
+  "name": "chat-assistant",
+  "version": "1.0.0",
+  "description": "Chat assistant using OpenAI",
+  "main": "index.js",
+  "dependencies": {
+    "openai": "^4.0.0"
+  }
+}
