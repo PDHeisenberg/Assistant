@@ -66,7 +66,7 @@
 </head>
 <body>
     <div id="chat-container">
-        <p class="system-message">Welcome to the chat assistant! This is a demo version with predefined responses.</p>
+        <p class="system-message">Welcome to the chat assistant! How can I help you today?</p>
     </div>
     <input type="text" id="user-input" placeholder="Type your message...">
     <button id="send-button">Send</button>
@@ -76,30 +76,36 @@
         const userInput = document.getElementById('user-input');
         const sendButton = document.getElementById('send-button');
 
-        const sampleResponses = [
-            "Hello! How can I assist you today?",
-            "That's an interesting question. Could you provide more details?",
-            "I'm here to help with any questions about the website owner's skills and experience.",
-            "The website owner has expertise in web development, UX design, and project management.",
-            "Would you like to know more about the website owner's recent projects?",
-            "The best way to contact the website owner is through the contact form on the main page.",
-            "I'm a demo version, but the full version will be able to provide more detailed responses.",
-            "Is there anything specific you'd like to know about the website owner's background?",
-            "The website owner is passionate about creating user-friendly and efficient web applications.",
-            "Thank you for your interest! The website owner will be notified of your inquiry."
-        ];
-
         sendButton.addEventListener('click', sendMessage);
         userInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') sendMessage();
         });
 
-        function sendMessage() {
+        async function sendMessage() {
             const message = userInput.value.trim();
             if (message) {
                 addMessageToChat('You', message, 'user-message');
-                simulateResponse();
                 userInput.value = '';
+                
+                try {
+                    const response = await fetch('http://localhost:3000/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ message }),
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
+                    const data = await response.json();
+                    addMessageToChat('Assistant', data.reply, 'assistant-message');
+                } catch (error) {
+                    console.error('Error:', error);
+                    addMessageToChat('System', 'Sorry, there was an error processing your request.', 'system-message');
+                }
             }
         }
 
@@ -110,16 +116,6 @@
             chatContainer.appendChild(messageElement);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
-
-        function simulateResponse() {
-            setTimeout(() => {
-                const response = sampleResponses[Math.floor(Math.random() * sampleResponses.length)];
-                addMessageToChat('Assistant', response, 'assistant-message');
-            }, 1000);
-        }
-
-        // Add some initial messages
-        setTimeout(() => addMessageToChat('Assistant', "Hello! How can I help you today?", 'assistant-message'), 500);
     </script>
 </body>
 </html>
