@@ -23,6 +23,24 @@
             flex-direction: column;
             height: 100%;
         }
+        .predefined-messages {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .predefined-message {
+            background-color: #F5F5F5;
+            border: 1px solid #E0E0E0;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .predefined-message:hover {
+            background-color: #CCFF6F;
+        }
         #chat-messages {
             flex-grow: 1;
             overflow-y: auto;
@@ -31,7 +49,7 @@
             border-radius: 32px;
             margin-bottom: 20px;
             border: 1px solid #E0E0E0;
-            min-height: 200px; /* Ensure a minimum height for the chat area */
+            min-height: 200px;
         }
         .message {
             margin-bottom: 15px;
@@ -64,7 +82,7 @@
             border-radius: 32px;
             padding: 5px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-top: auto; /* Push to bottom */
+            margin-top: auto;
         }
         #user-input {
             flex-grow: 1;
@@ -95,7 +113,40 @@
         #send-button:hover {
             background-color: #B8E663;
         }
-
+        .loading-bubble {
+            display: flex;
+            align-items: center;
+            background-color: #F5F5F5;
+            border-radius: 18px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            animation: pulse 1.5s infinite;
+        }
+        .loading-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #333333;
+            border-radius: 50%;
+            margin: 0 3px;
+            opacity: 0;
+            animation: loadingDots 1.5s infinite;
+        }
+        .loading-dot:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+        .loading-dot:nth-child(3) {
+            animation-delay: 1s;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        @keyframes loadingDots {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
         @media (max-width: 600px) {
             .chat-container {
                 padding: 10px;
@@ -114,6 +165,12 @@
 </head>
 <body>
     <div class="chat-container">
+        <div class="predefined-messages">
+            <button class="predefined-message">Tell me about Parth's experience</button>
+            <button class="predefined-message">What are Parth's key skills?</button>
+            <button class="predefined-message">Parth's notable projects</button>
+            <button class="predefined-message">Parth's education background</button>
+        </div>
         <div id="chat-messages"></div>
         <div class="input-area">
             <input type="text" id="user-input" placeholder="Type your message here...">
@@ -125,8 +182,8 @@
         const chatMessages = document.getElementById('chat-messages');
         const userInput = document.getElementById('user-input');
         const sendButton = document.getElementById('send-button');
+        const predefinedMessages = document.querySelectorAll('.predefined-message');
 
-        // Initial greeting message
         window.onload = function() {
             addMessageToChat('Assistant', "Hello! Welcome to Parth's website. I'm his AI assistant. How can I help you today?", 'assistant-message');
         };
@@ -136,11 +193,25 @@
             if (e.key === 'Enter') sendMessage();
         });
 
+        predefinedMessages.forEach(button => {
+            button.addEventListener('click', function() {
+                userInput.value = this.textContent;
+                sendMessage();
+            });
+        });
+
         async function sendMessage() {
             const message = userInput.value.trim();
             if (message) {
                 addMessageToChat('You', message, 'user-message');
                 userInput.value = '';
+                
+                // Show loading bubble
+                const loadingBubble = document.createElement('div');
+                loadingBubble.className = 'loading-bubble';
+                loadingBubble.innerHTML = '<div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div>';
+                chatMessages.appendChild(loadingBubble);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
                 
                 try {
                     const response = await fetch('/.netlify/functions/chat', {
@@ -156,9 +227,17 @@
                     }
                     
                     const data = await response.json();
+                    
+                    // Remove loading bubble
+                    chatMessages.removeChild(loadingBubble);
+                    
                     addMessageToChat('Assistant', data.reply, 'assistant-message');
                 } catch (error) {
                     console.error('Error:', error);
+                    
+                    // Remove loading bubble
+                    chatMessages.removeChild(loadingBubble);
+                    
                     addMessageToChat('System', 'Sorry, there was an error processing your request.', 'assistant-message');
                 }
             }
