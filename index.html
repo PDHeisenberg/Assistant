@@ -4,16 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Chat Assistant</title>
-    <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@1,800,500,100,700,400,300,200,900&display=swap" rel="stylesheet">
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: 'Cabinet Grotesk', sans-serif;
-            color: #333333;
-        }
-        .chat-icon {
+        #chat-icon {
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -26,13 +18,13 @@
             align-items: center;
             cursor: pointer;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 1000;
+            z-index: 10000;
         }
-        .chat-icon img {
+        #chat-icon img {
             width: 30px;
             height: 30px;
         }
-        .chat-container {
+        #chat-container {
             position: fixed;
             bottom: 100px;
             right: 20px;
@@ -41,32 +33,23 @@
             background-color: #FFFFFF;
             border-radius: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 999;
+            z-index: 10001;
             display: none;
             flex-direction: column;
             overflow: hidden;
-        }
-        .chat-container.active {
-            display: flex;
-            z-index: 1001;
+            font-family: Arial, sans-serif;
         }
         #chat-messages {
             flex-grow: 1;
             overflow-y: auto;
             padding: 20px;
-            background-color: #FFFFFF;
-            border-radius: 20px 20px 0 0;
         }
         .message {
             margin-bottom: 15px;
             line-height: 1.5;
         }
-        .user-message {
-            text-align: right;
-        }
-        .assistant-message {
-            text-align: left;
-        }
+        .user-message { text-align: right; }
+        .assistant-message { text-align: left; }
         .message span {
             display: inline-block;
             padding: 8px 12px;
@@ -82,74 +65,24 @@
             background-color: #F5F5F5;
             color: #333333;
         }
-        .input-area {
+        #input-area {
             display: flex;
-            background-color: #FFFFFF;
-            border-top: 1px solid #E0E0E0;
             padding: 10px;
+            border-top: 1px solid #E0E0E0;
         }
         #user-input {
             flex-grow: 1;
             padding: 10px;
-            border: none;
+            border: 1px solid #E0E0E0;
             border-radius: 20px;
-            background-color: #F5F5F5;
-            font-family: 'Cabinet Grotesk', sans-serif;
-            font-size: 14px;
-            color: #333333;
-        }
-        #user-input::placeholder {
-            color: #888888;
+            margin-right: 10px;
         }
         #send-button {
-            padding: 10px 15px;
-            border: none;
+            padding: 10px 20px;
             background-color: #CCFF6F;
-            color: #333333;
-            font-family: 'Cabinet Grotesk', sans-serif;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
+            border: none;
             border-radius: 20px;
-            margin-left: 10px;
-            transition: background-color 0.3s;
-        }
-        #send-button:hover {
-            background-color: #B8E663;
-        }
-        .loading-bubble {
-            display: inline-flex;
-            align-items: center;
-            background-color: #F5F5F5;
-            border-radius: 18px;
-            padding: 10px 15px;
-            margin-bottom: 15px;
-            animation: pulse 1.5s infinite;
-        }
-        .loading-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #333333;
-            border-radius: 50%;
-            margin: 0 3px;
-            opacity: 0;
-            animation: loadingDots 1.5s infinite;
-        }
-        .loading-dot:nth-child(2) {
-            animation-delay: 0.5s;
-        }
-        .loading-dot:nth-child(3) {
-            animation-delay: 1s;
-        }
-        @keyframes pulse {
-            0% { opacity: 0.6; }
-            50% { opacity: 1; }
-            100% { opacity: 0.6; }
-        }
-        @keyframes loadingDots {
-            0% { opacity: 0; }
-            50% { opacity: 1; }
-            100% { opacity: 0; }
+            cursor: pointer;
         }
         #close-chat {
             position: absolute;
@@ -159,48 +92,45 @@
             border: none;
             font-size: 20px;
             cursor: pointer;
-            color: #333333;
-        }
-        @media (max-width: 600px) {
-            .chat-container {
-                width: 90%;
-                height: 80%;
-                bottom: 10%;
-                right: 5%;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="chat-icon" id="chat-button">
-        <img src="https://cdn-icons-png.flaticon.com/512/1380/1380370.png" alt="Chat Icon">
-    </div>
-    <div class="chat-container" id="chat-container">
-        <button id="close-chat">×</button>
-        <div id="chat-messages"></div>
-        <div class="input-area">
-            <input type="text" id="user-input" placeholder="Type your message here...">
-            <button id="send-button">Send</button>
-        </div>
-    </div>
-
     <script>
-        const chatButton = document.getElementById('chat-button');
-        const chatContainer = document.getElementById('chat-container');
+        // Create chat icon
+        const chatIcon = document.createElement('div');
+        chatIcon.id = 'chat-icon';
+        chatIcon.innerHTML = '<img src="https://cdn-icons-png.flaticon.com/512/1380/1380370.png" alt="Chat Icon">';
+        document.body.appendChild(chatIcon);
+
+        // Create chat container
+        const chatContainer = document.createElement('div');
+        chatContainer.id = 'chat-container';
+        chatContainer.innerHTML = `
+            <button id="close-chat">×</button>
+            <div id="chat-messages"></div>
+            <div id="input-area">
+                <input type="text" id="user-input" placeholder="Type your message here...">
+                <button id="send-button">Send</button>
+            </div>
+        `;
+        document.body.appendChild(chatContainer);
+
+        // Chat functionality
         const chatMessages = document.getElementById('chat-messages');
         const userInput = document.getElementById('user-input');
         const sendButton = document.getElementById('send-button');
         const closeChat = document.getElementById('close-chat');
 
-        chatButton.addEventListener('click', () => {
-            chatContainer.classList.add('active');
+        chatIcon.addEventListener('click', () => {
+            chatContainer.style.display = 'flex';
             if (chatMessages.children.length === 0) {
                 addMessageToChat('Assistant', "Hello! Welcome to Parth's website. I'm his AI assistant. How can I help you today?", 'assistant-message');
             }
         });
 
         closeChat.addEventListener('click', () => {
-            chatContainer.classList.remove('active');
+            chatContainer.style.display = 'none';
         });
 
         sendButton.addEventListener('click', sendMessage);
@@ -214,31 +144,19 @@
                 addMessageToChat('You', message, 'user-message');
                 userInput.value = '';
                 
-                const loadingBubble = document.createElement('div');
-                loadingBubble.className = 'loading-bubble';
-                loadingBubble.innerHTML = '<div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div>';
-                chatMessages.appendChild(loadingBubble);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                
                 try {
                     const response = await fetch('/.netlify/functions/chat', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ message }),
                     });
                     
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
+                    if (!response.ok) throw new Error('Network response was not ok');
                     
                     const data = await response.json();
-                    chatMessages.removeChild(loadingBubble);
                     addMessageToChat('Assistant', data.reply, 'assistant-message');
                 } catch (error) {
                     console.error('Error:', error);
-                    chatMessages.removeChild(loadingBubble);
                     addMessageToChat('Assistant', 'I apologize, but I encountered an issue while processing your request. Could you please try again?', 'assistant-message');
                 }
             }
