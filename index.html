@@ -164,14 +164,27 @@
             font-family: 'Cabinet Grotesk', sans-serif;
             font-size: 16px;
         }
+        #message-form textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .form-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
         #message-form button {
-            padding: 10px;
-            background-color: #CCFF6F;
+            padding: 10px 20px;
             border: none;
             border-radius: 25px;
             font-family: 'Cabinet Grotesk', sans-serif;
             font-size: 16px;
             cursor: pointer;
+            flex-grow: 1;
+            margin: 0 5px;
+        }
+        #send-message-btn {
+            background-color: #CCFF6F;
+            color: #333333;
         }
         #cancel-message {
             background-color: #F5F5F5;
@@ -208,8 +221,10 @@
             <input type="text" id="name" placeholder="Your Name" required>
             <input type="email" id="email" placeholder="Your Email" required>
             <textarea id="message" placeholder="Your Message" required></textarea>
-            <button type="submit">Send Message</button>
-            <button type="button" id="cancel-message">Cancel</button>
+            <div class="form-buttons">
+                <button type="submit" id="send-message-btn">Send Message</button>
+                <button type="button" id="cancel-message">Cancel</button>
+            </div>
         </form>
         <div class="input-area">
             <input type="text" id="user-input" placeholder="Type your message here...">
@@ -348,9 +363,19 @@
         function addMessageToChat(sender, message, className) {
             const messageElement = document.createElement('div');
             messageElement.className = `message ${className}`;
-            messageElement.innerHTML = `<span>${message}</span>`;
+            messageElement.innerHTML = `<span>${formatMessage(message)}</span>`;
             chatMessages.appendChild(messageElement);
             chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function formatMessage(message) {
+            // Bold text
+            message = message.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            // Italic text
+            message = message.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            // Underline text
+            message = message.replace(/__(.*?)__/g, '<u>$1</u>');
+            return message;
         }
 
         function checkRateLimit() {
