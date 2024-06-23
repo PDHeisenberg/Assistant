@@ -5,17 +5,34 @@ exports.handler = async (event, context) => {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  const { name, email, message } = JSON.parse(event.body);
+  let { name, email, message } = JSON.parse(event.body);
 
-  let transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
-    secure: true,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
+  // Basic validation
+  if (!name || !email || !message) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: 'Name, email, and message are required' }),
+    };
+  }
+
+  let transporter;
+  try {
+    transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      secure: true,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+  } catch (error) {
+    console.error('Error creating transporter:', error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: 'Error setting up email service' }),
+    };
+  }
 
   try {
     await transporter.sendMail({
