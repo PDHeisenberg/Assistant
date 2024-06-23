@@ -95,6 +95,8 @@
             font-family: 'Cabinet Grotesk', sans-serif;
             font-size: 16px;
             color: #333333;
+            min-width: 0;
+            text-overflow: ellipsis;
         }
         #user-input::placeholder {
             color: #888888;
@@ -112,6 +114,7 @@
             transition: background-color 0.3s;
             margin-left: 10px;
             white-space: nowrap;
+            flex-shrink: 0;
         }
         #send-button:hover {
             background-color: #B8E663;
@@ -159,18 +162,6 @@
                 padding: 16px;
                 max-height: calc(100vh - 180px);
             }
-            .input-area {
-                flex-direction: column;
-            }
-            #user-input {
-                width: 100%;
-                margin-bottom: 10px;
-                box-sizing: border-box;
-            }
-            #send-button {
-                width: 100%;
-                margin-left: 0;
-            }
             .predefined-messages {
                 flex-direction: column;
             }
@@ -180,6 +171,9 @@
             }
             .message span {
                 max-width: 90%;
+            }
+            #send-button {
+                padding: 15px;
             }
         }
     </style>
@@ -233,33 +227,64 @@
                 addMessageToChat('You', message, 'user-message');
                 userInput.value = '';
                 
-                const loadingBubble = document.createElement('div');
-                loadingBubble.className = 'loading-bubble';
-                loadingBubble.innerHTML = '<div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div>';
-                chatMessages.appendChild(loadingBubble);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                
-                try {
-                    const response = await fetch('/.netlify/functions/chat', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ message }),
-                    });
+                if (message.toLowerCase().includes('send a message') || message.toLowerCase().includes('leave a message')) {
+                    addMessageToChat('Assistant', "Certainly! I can help you send a message to Parth. Could you please provide your name, email, and message in the following format: 'Name: [Your Name], Email: [Your Email], Message: [Your Message]'", 'assistant-message');
+                } else if (message.toLowerCase().startsWith('name:')) {
+                    const parts = message.split(',');
+                    const name = parts[0].split(':')[1].trim();
+                    const email = parts[1].split(':')[1].trim();
+                    const userMessage = parts[2].split(':').slice(1).join(':').trim();
+                    await sendMessageToParth(name, email, userMessage);
+                } else {
+                    const loadingBubble = document.createElement('div');
+                    loadingBubble.className = 'loading-bubble';
+                    loadingBubble.innerHTML = '<div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div>';
+                    chatMessages.appendChild(loadingBubble);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
                     
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                    try {
+                        const response = await fetch('/.netlify/functions/chat', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ message }),
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        
+                        const data = await response.json();
+                        chatMessages.removeChild(loadingBubble);
+                        addMessageToChat('Assistant', data.reply, 'assistant-message');
+                    } catch (error) {
+                        console.error('Error:', error);
+                        chatMessages.removeChild(loadingBubble);
+                        addMessageToChat('Assistant', 'I apologize, but I encountered an issue while processing your request. Could you please try again?', 'assistant-message');
                     }
-                    
-                    const data = await response.json();
-                    chatMessages.removeChild(loadingBubble);
-                    addMessageToChat('Assistant', data.reply, 'assistant-message');
-                } catch (error) {
-                    console.error('Error:', error);
-                    chatMessages.removeChild(loadingBubble);
-                    addMessageToChat('Assistant', 'I apologize, but I encountered an issue while processing your request. Could you please try again?', 'assistant-message');
                 }
+            }
+        }
+
+        async function sendMessageToParth(name, email, message) {
+            try {
+                const response = await fetch('/.netlify/functions/send-message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name, email, message }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to send message');
+                }
+
+                addMessageToChat('Assistant', "Your message has been sent to Parth successfully. He'll get back to you soon.", 'assistant-message');
+            } catch (error) {
+                console.error('Error:', error);
+                addMessageToChat('Assistant', 'I apologize, but there was an error sending your message. Please try again later.', 'assistant-message');
             }
         }
 
