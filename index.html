@@ -148,6 +148,36 @@
             50% { opacity: 1; }
             100% { opacity: 0; }
         }
+        #message-form {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            padding: 15px;
+            background-color: #F5F5F5;
+            border-radius: 25px;
+            margin-bottom: 10px;
+        }
+        #message-form input, #message-form textarea {
+            padding: 10px;
+            border: 1px solid #D0D0D0;
+            border-radius: 5px;
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 16px;
+        }
+        #message-form button {
+            padding: 10px;
+            background-color: #CCFF6F;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #cancel-message {
+            background-color: #F5F5F5;
+            color: #333333;
+            border: 1px solid #D0D0D0;
+        }
         @media (max-width: 600px) {
             .chat-container {
                 height: 100vh;
@@ -174,6 +204,13 @@
 <body>
     <div class="chat-container">
         <div id="chat-messages"></div>
+        <form id="message-form">
+            <input type="text" id="name" placeholder="Your Name" required>
+            <input type="email" id="email" placeholder="Your Email" required>
+            <textarea id="message" placeholder="Your Message" required></textarea>
+            <button type="submit">Send Message</button>
+            <button type="button" id="cancel-message">Cancel</button>
+        </form>
         <div class="input-area">
             <input type="text" id="user-input" placeholder="Type your message here...">
             <button id="send-button">Send</button>
@@ -184,6 +221,8 @@
         const chatMessages = document.getElementById('chat-messages');
         const userInput = document.getElementById('user-input');
         const sendButton = document.getElementById('send-button');
+        const messageForm = document.getElementById('message-form');
+        const cancelMessage = document.getElementById('cancel-message');
 
         const predefinedMessages = [
             "Tell me about Parth's professional experience",
@@ -214,6 +253,21 @@
             if (e.key === 'Enter') sendMessage();
         });
 
+        messageForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+            await sendMessageToParth(name, email, message);
+            messageForm.style.display = 'none';
+            messageForm.reset();
+        });
+
+        cancelMessage.addEventListener('click', () => {
+            messageForm.style.display = 'none';
+            messageForm.reset();
+        });
+
         async function sendMessage() {
             const message = userInput.value.trim();
             if (message) {
@@ -221,13 +275,7 @@
                 userInput.value = '';
                 
                 if (message.toLowerCase().includes('send a message') || message.toLowerCase().includes('leave a message')) {
-                    addMessageToChat('Assistant', "Certainly! I can help you send a message to Parth. Could you please provide your name, email, and message in the following format: 'Name: [Your Name], Email: [Your Email], Message: [Your Message]'", 'assistant-message');
-                } else if (message.toLowerCase().startsWith('name:')) {
-                    const parts = message.split(',');
-                    const name = parts[0].split(':')[1].trim();
-                    const email = parts[1].split(':')[1].trim();
-                    const userMessage = parts[2].split(':').slice(1).join(':').trim();
-                    await sendMessageToParth(name, email, userMessage);
+                    showMessageForm();
                 } else {
                     const loadingBubble = document.createElement('div');
                     loadingBubble.className = 'loading-bubble';
@@ -260,6 +308,11 @@
             }
         }
 
+        function showMessageForm() {
+            messageForm.style.display = 'flex';
+            addMessageToChat('Assistant', "Great! Please fill out the form below to send a message to Parth. We need your email so he can reply to you directly.", 'assistant-message');
+        }
+
         async function sendMessageToParth(name, email, message) {
             try {
                 const response = await fetch('/.netlify/functions/send-message', {
@@ -274,7 +327,7 @@
                     throw new Error('Failed to send message');
                 }
 
-                addMessageToChat('Assistant', "Your message has been sent to Parth successfully. He'll get back to you soon.", 'assistant-message');
+                addMessageToChat('Assistant', "Your message has been sent to Parth successfully. He'll get back to you soon via the email you provided.", 'assistant-message');
             } catch (error) {
                 console.error('Error:', error);
                 addMessageToChat('Assistant', 'I apologize, but there was an error sending your message. Please try again later.', 'assistant-message');
