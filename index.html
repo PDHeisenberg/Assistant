@@ -156,6 +156,13 @@
             background-color: #F5F5F5;
             border-radius: 25px;
             margin-bottom: 10px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, margin-bottom 0.3s ease-out;
+        }
+        #message-form.visible {
+            max-height: 500px;
+            margin-bottom: 10px;
         }
         #message-form input, #message-form textarea {
             padding: 10px;
@@ -280,14 +287,10 @@
             const email = document.getElementById('email').value;
             const message = document.getElementById('message').value;
             await sendMessageToParth(name, email, message);
-            messageForm.style.display = 'none';
-            messageForm.reset();
+            hideMessageForm();
         });
 
-        cancelMessage.addEventListener('click', () => {
-            messageForm.style.display = 'none';
-            messageForm.reset();
-        });
+        cancelMessage.addEventListener('click', hideMessageForm);
 
         async function sendMessage() {
             if (!checkRateLimit()) {
@@ -336,7 +339,19 @@
 
         function showMessageForm() {
             messageForm.style.display = 'flex';
+            setTimeout(() => {
+                messageForm.classList.add('visible');
+                messageForm.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }, 0);
             addMessageToChat('Assistant', "Great! Please fill out the form below to send a message to Parth. We need your email so he can reply to you directly.", 'assistant-message');
+        }
+
+        function hideMessageForm() {
+            messageForm.classList.remove('visible');
+            setTimeout(() => {
+                messageForm.style.display = 'none';
+                messageForm.reset();
+            }, 300); // Match this delay with the CSS transition time
         }
 
         async function sendMessageToParth(name, email, message) {
