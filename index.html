@@ -78,16 +78,16 @@
             border-color: #CCFF6F;
         }
         .input-area {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            background-color: #FFFFFF;
-            padding: 10px;
-            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-            z-index: 1001;
-        }
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    background-color: #FFFFFF;
+    padding: 10px;
+    z-index: 1001;
+    border-top: 1px solid #E0E0E0;  /* Replace shadow with a subtle border */
+}
         #user-input {
             flex-grow: 1;
             padding: 15px;
@@ -156,28 +156,30 @@
             100% { opacity: 0; }
         }
         #message-form {
-            position: fixed;
-            bottom: 70px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 600px;
-            display: none;
-            flex-direction: column;
-            gap: 10px;
-            padding: 15px;
-            background-color: #F5F5F5;
-            border-radius: 25px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-        }
-        #message-form.visible {
-            max-height: 80vh;
-            overflow-y: auto;
-        }
+    position: fixed;
+    bottom: 70px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    background-color: #F5F5F5;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    z-index: 1000;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    box-sizing: border-box;
+}
+
+#message-form.visible {
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
+}
         #message-form input, #message-form textarea {
             padding: 10px;
             border: 1px solid #D0D0D0;
@@ -352,16 +354,16 @@
         }
 
         function showMessageForm() {
-            messageForm.style.display = 'flex';
-            setTimeout(() => {
-                messageForm.classList.add('visible');
-                window.scrollTo({
-                    top: document.body.scrollHeight,
-                    behavior: 'smooth'
-                });
-            }, 0);
-            addMessageToChat('Assistant', "Great! Please fill out the form below to send a message to Parth. We need your email so he can reply to you directly.", 'assistant-message');
-        }
+    messageForm.style.display = 'flex';
+    setTimeout(() => {
+        messageForm.classList.add('visible');
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+    }, 0);
+    addMessageToChat('Assistant', "Great! Please fill out the form below to send a message to Parth. We need your email so he can reply to you directly.", 'assistant-message');
+}
 
         function hideMessageForm() {
             messageForm.classList.remove('visible');
