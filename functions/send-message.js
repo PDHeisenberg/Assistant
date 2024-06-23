@@ -7,11 +7,10 @@ exports.handler = async (event, context) => {
 
   const { name, email, message } = JSON.parse(event.body);
 
-  // Create a transporter using SMTP
   let transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
-    secure: true, // use TLS
+    secure: true,
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
@@ -19,10 +18,9 @@ exports.handler = async (event, context) => {
   });
 
   try {
-    // Send mail with defined transport object
-    let info = await transporter.sendMail({
+    await transporter.sendMail({
       from: `"Chat Assistant" <${process.env.SMTP_USER}>`,
-      to: process.env.YOUR_EMAIL, // Your email address
+      to: process.env.YOUR_EMAIL,
       subject: `New message from ${name}`,
       text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
       html: `<p><strong>Name:</strong> ${name}</p>
