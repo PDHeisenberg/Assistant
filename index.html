@@ -65,7 +65,7 @@
         .predefined-message {
             background-color: #FFFFFF;
             border: 1px solid #D0D0D0;
-            border-radius: 20px;
+            border-radius: 25px;
             padding: 8px 15px;
             font-size: 16px;
             cursor: pointer;
@@ -160,7 +160,7 @@
         #message-form input, #message-form textarea {
             padding: 10px;
             border: 1px solid #D0D0D0;
-            border-radius: 5px;
+            border-radius: 25px;
             font-family: 'Cabinet Grotesk', sans-serif;
             font-size: 16px;
         }
@@ -168,7 +168,7 @@
             padding: 10px;
             background-color: #CCFF6F;
             border: none;
-            border-radius: 5px;
+            border-radius: 25px;
             font-family: 'Cabinet Grotesk', sans-serif;
             font-size: 16px;
             cursor: pointer;
@@ -230,6 +230,12 @@
             "Can I schedule a meeting with Parth?"
         ];
 
+        // Rate limiting variables
+        const MAX_MESSAGES = 10;
+        const TIME_WINDOW = 60000; // 1 minute in milliseconds
+        let messageCount = 0;
+        let lastResetTime = Date.now();
+
         window.onload = function() {
             addMessageToChat('Assistant', "Hello! I'm Alfred, Parth's personal assistant. I can provide information about his experience, relay messages, and help schedule meetings. How may I assist you today?", 'assistant-message');
             
@@ -269,6 +275,11 @@
         });
 
         async function sendMessage() {
+            if (!checkRateLimit()) {
+                addMessageToChat('Assistant', "I'm sorry, but you've sent too many messages in a short time. Please wait a moment before sending more messages.", 'assistant-message');
+                return;
+            }
+
             const message = userInput.value.trim();
             if (message) {
                 addMessageToChat('You', message, 'user-message');
@@ -340,6 +351,21 @@
             messageElement.innerHTML = `<span>${message}</span>`;
             chatMessages.appendChild(messageElement);
             chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function checkRateLimit() {
+            const now = Date.now();
+            if (now - lastResetTime > TIME_WINDOW) {
+                messageCount = 0;
+                lastResetTime = now;
+            }
+            
+            if (messageCount >= MAX_MESSAGES) {
+                return false;
+            }
+            
+            messageCount++;
+            return true;
         }
     </script>
 </body>
