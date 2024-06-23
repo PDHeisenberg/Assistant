@@ -13,13 +13,11 @@
             font-family: 'Cabinet Grotesk', sans-serif;
             font-size: 16px;
             color: #333333;
-            background-color: #F5F5F5;
         }
         .chat-container {
-            max-width: 800px;
+            max-width: 100%;
             width: 100%;
             margin: 0 auto;
-            padding: 16px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
@@ -30,8 +28,6 @@
             overflow-y: auto;
             padding: 20px;
             background-color: #FFFFFF;
-            border-radius: 32px;
-            margin-bottom: 20px;
             min-height: 200px;
         }
         .message {
@@ -83,7 +79,6 @@
         .input-area {
             display: flex;
             background-color: #FFFFFF;
-            border-radius: 32px;
             padding: 5px;
         }
         #user-input {
@@ -155,12 +150,10 @@
         }
         @media (max-width: 600px) {
             .chat-container {
-                padding: 16px;
                 height: 100vh;
             }
             #chat-messages {
-                padding: 16px;
-                max-height: calc(100vh - 180px);
+                max-height: calc(100vh - 60px);
             }
             .predefined-messages {
                 flex-direction: column;
