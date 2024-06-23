@@ -15,23 +15,22 @@
             color: #333333;
         }
         .chat-container {
-    max-width: 100%;
-    width: 100%;
-    margin: 0 auto;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    padding-bottom: 70px; /* Adjust this value based on your input area height */
-}
-
-#chat-messages {
-    flex-grow: 1;
-    overflow-y: auto;
-    padding: 20px;
-    background-color: #FFFFFF;
-    margin-bottom: 10px;
-}
+            max-width: 100%;
+            width: 100%;
+            margin: 0 auto;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding-bottom: 70px;
+        }
+        #chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #FFFFFF;
+            margin-bottom: 10px;
+        }
         .message {
             margin-bottom: 15px;
             line-height: 1.5;
@@ -79,16 +78,16 @@
             border-color: #CCFF6F;
         }
         .input-area {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    background-color: #FFFFFF;
-    padding: 10px;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-    z-index: 1001;
-}
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            background-color: #FFFFFF;
+            padding: 10px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+        }
         #user-input {
             flex-grow: 1;
             padding: 15px;
@@ -157,29 +156,27 @@
             100% { opacity: 0; }
         }
         #message-form {
-        position: fixed;
-        bottom: 70px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        max-width: 600px;
-        display: none;
-        flex-direction: column;
-        gap: 10px;
-        padding: 15px;
-        background-color: #F5F5F5;
-        border-radius: 25px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        z-index: 1000;
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease-out;
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            padding: 15px;
+            background-color: #F5F5F5;
+            border-radius: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
         }
-
         #message-form.visible {
-        max-height: 80vh;
-        overflow-y: auto;
-        }: 10px;
+            max-height: 80vh;
+            overflow-y: auto;
         }
         #message-form input, #message-form textarea {
             padding: 10px;
@@ -220,7 +217,7 @@
                 height: 100vh;
             }
             #chat-messages {
-                max-height: calc(100vh - 60px);
+                max-height: calc(100vh - 70px);
             }
             .predefined-messages {
                 flex-direction: column;
@@ -355,23 +352,23 @@
         }
 
         function showMessageForm() {
-    messageForm.style.display = 'flex';
-    setTimeout(() => {
-        messageForm.classList.add('visible');
-        window.scrollTo({
-            top: document.body.scrollHeight,
-            behavior: 'smooth'
-        });
-    }, 0);
-    addMessageToChat('Assistant', "Great! Please fill out the form below to send a message to Parth. We need your email so he can reply to you directly.", 'assistant-message');
-}
+            messageForm.style.display = 'flex';
+            setTimeout(() => {
+                messageForm.classList.add('visible');
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 0);
+            addMessageToChat('Assistant', "Great! Please fill out the form below to send a message to Parth. We need your email so he can reply to you directly.", 'assistant-message');
+        }
 
         function hideMessageForm() {
             messageForm.classList.remove('visible');
             setTimeout(() => {
                 messageForm.style.display = 'none';
                 messageForm.reset();
-            }, 300); // Match this delay with the CSS transition time
+            }, 300);
         }
 
         async function sendMessageToParth(name, email, message) {
