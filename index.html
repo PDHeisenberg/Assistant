@@ -78,15 +78,15 @@
             border-color: #CCFF6F;
         }
         .input-area {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    background-color: #FFFFFF;
-    padding: 10px;
-    z-index: 1001;
-}
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            background-color: #FFFFFF;
+            padding: 10px;
+            z-index: 1001;
+        }
         #user-input {
             flex-grow: 1;
             padding: 15px;
@@ -116,69 +116,61 @@
             margin-left: 10px;
             white-space: nowrap;
             flex-shrink: 0;
-        }
-        #send-button:hover {
+        }        #send-button:hover {
             background-color: #B8E663;
         }
         .loading-bubble {
             display: inline-flex;
             align-items: center;
             background-color: #F5F5F5;
-            border-radius: 18px;
-            padding: 10px 15px;
+            border-rad            padding: 10px 15px;
             margin-bottom: 15px;
             animation: pulse 1.5s infinite;
         }
         .loading-dot {
             width: 8px;
             height: 8px;
-            background-color: #333333;
-            border-radius: 50%;
+            background-color:            border-radius: 50%;
             margin: 0 3px;
             opacity: 0;
             animation: loadingDots 1.5s infinite;
         }
         .loading-dot:nth-child(2) {
-            animation-delay: 0.5s;
-        }
+             }
         .loading-dot:nth-child(3) {
             animation-delay: 1s;
         }
         @keyframes pulse {
             0% { opacity: 0.6; }
             50% { opacity: 1; }
-            100% { opacity: 0.6; }
-        }
+            100% { opacity:         }
         @keyframes loadingDots {
             0% { opacity: 0; }
             50% { opacity: 1; }
             100% { opacity: 0; }
         }
         #message-form {
-    position: fixed;
-    bottom: 70px;
-    left: 0;
-    right: 0;
-    width: 100%;
-    max-width: 100%;
-    display: none;
-    flex-direction: column;
-    gap: 10px;
-    padding: 15px;
-    background-color: #F5F5F5;
-    border-top-left-radius: 25px;
-    border-top-right-radius: 25px;
-    z-index: 1000;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
-    box-sizing: border-box;
-}
-
-#message-form.visible {
-    max-height: calc(100vh - 70px);
-    overflow-y: auto;
-}
+            position: fixed;
+            bottom: 70px;
+            left: 0;
+            right: 0;
+            width: 100%;
+            max-width: 100%;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            padding: 15px;
+            background-color: #F5F5F5;
+                    border-top-right-radius: 25px;
+            z-index: 1000;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            box-sizing: border-box;
+        }
+        #message-form.visible {
+            max-height: calc(100vh            overflow-y: auto;
+        }
         #message-form input, #message-form textarea {
             padding: 10px;
             border: 1px solid #D0D0D0;
@@ -211,14 +203,29 @@
         #cancel-message {
             background-color: #F5F5F5;
             color: #333333;
-            border: 1px solid #D0D0D0;
-        }
+            border: 1px solid        }
         @media (max-width: 600px) {
+            body {
+                height: 100%;
+                position: fixed;
+                overflow-y: scroll;
+                -webkit-overflow-scrolling: touch;
+            }
             .chat-container {
-                height: 100vh;
+                height: 100%;
+                padding-bottom: 120px;
             }
             #chat-messages {
-                max-height: calc(100vh - 70px);
+                max-height: calc(100% - 120px);
+            }
+            .input-area {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 10px;
+                background-color: #FFFFFF;
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
             }
             .predefined-messages {
                 flex-direction: column;
@@ -307,6 +314,19 @@
 
         cancelMessage.addEventListener('click', hideMessageForm);
 
+        function addMessageToChat(sender, message, className) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${className}`;
+            messageElement.innerHTML = `<span>${formatMessage(message)}</span>`;
+            chatMessages.appendChild(messageElement);
+            
+            // Scroll to the bottom of the chat
+            setTimeout(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                window.scrollTo(0, document.body.scrollHeight);
+            }, 100);
+        }
+
         async function sendMessage() {
             if (!checkRateLimit()) {
                 addMessageToChat('Assistant', "I'm sorry, but you've sent too many messages in a short time. Please wait a moment before sending more messages.", 'assistant-message');
@@ -343,6 +363,11 @@
                         const data = await response.json();
                         chatMessages.removeChild(loadingBubble);
                         addMessageToChat('Assistant', data.reply, 'assistant-message');
+
+                        // Scroll to bottom after sending message and receiving response
+                        setTimeout(() => {
+                            window.scrollTo(0, document.body.scrollHeight);
+                        }, 100);
                     } catch (error) {
                         console.error('Error:', error);
                         chatMessages.removeChild(loadingBubble);
@@ -353,16 +378,16 @@
         }
 
         function showMessageForm() {
-    messageForm.style.display = 'flex';
-    setTimeout(() => {
-        messageForm.classList.add('visible');
-        window.scrollTo({
-            top: document.body.scrollHeight,
-            behavior: 'smooth'
-        });
-    }, 0);
-    addMessageToChat('Assistant', "Great! Please fill out the form below to send a message to Parth. We need your email so he can reply to you directly.", 'assistant-message');
-}
+            messageForm.style.display = 'flex';
+            setTimeout(() => {
+                messageForm.classList.add('visible');
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 0);
+            addMessageToChat('Assistant', "Great! Please fill out the form below to send a message to Parth. We need your email so he can reply to you directly.", 'assistant-message');
+        }
 
         function hideMessageForm() {
             messageForm.classList.remove('visible');
@@ -372,59 +397,57 @@
             }, 300);
         }
 
-        async function sendMessageToParth(name, email, message) {
-            try {
-                const response = await fetch('/.netlify/functions/send-message', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ name, email, message }),
-                });
+      async function sendMessageToParth(name, email, message) {
+    try {
+        const response = await fetch('/.netlify/functions/send-message', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, email, message }),
+        });
 
-                if (!response.ok) {
-                    throw new Error('Failed to send message');
-                }
+        if (!response.ok) {
+            throw new Error('Failed to send message');
 
-                addMessageToChat('Assistant', "Your message has been sent to Parth successfully. He'll get back to you soon via the email you provided.", 'assistant-message');
-            } catch (error) {
-                console.error('Error:', error);
-                addMessageToChat('Assistant', 'I apologize, but there was an error sending your message. Please try again later.', 'assistant-message');
-            }
-        }
+        addMessageToChat('Assistant', "Your message has been sent to Parth successfully. He'll get back to you soon via the email you provided.", 'assistant-message');
+    } catch (error) {
+        console.error('Error:', error);
+        addMessageToChat('Assistant', 'I apologize, but there was an error sending your message. Please try again later.', 'assistant-message');
+    }
+}
 
-        function addMessageToChat(sender, message, className) {
-            const messageElement = document.createElement('div');
-            messageElement.className = `message ${className}`;
-            messageElement.innerHTML = `<span>${formatMessage(message)}</span>`;
-            chatMessages.appendChild(messageElement);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
+window.addEventListener('resize', () => {
+    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+        window.setTimeout(() => {
+            document.activeElement.scrollIntoView();
+        }, 0);
+    }
+});
 
-        function formatMessage(message) {
-            // Bold text
-            message = message.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            // Italic text
-            message = message.replace(/\*(.*?)\*/g, '<em>$1</em>');
-            // Underline text
-            message = message.replace(/__(.*?)__/g, '<u>$1</u>');
-            return message;
-        }
+function formatMessage(message) {
+    // Bold text
+    message = message.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    // Italic text
+    message = message.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    // Underline text
+    message = message.replace(/__(.*?)__/g, '<u>$1</u>');
+    return message;
+}
 
-        function checkRateLimit() {
-            const now = Date.now();
-            if (now - lastResetTime > TIME_WINDOW) {
-                messageCount = 0;
-                lastResetTime = now;
-            }
-            
-            if (messageCount >= MAX_MESSAGES) {
-                return false;
-            }
-            
-            messageCount++;
-            return true;
-        }
-    </script>
+function checkRateLimit() {
+    const now = Date.now();
+    if        messageCount = 0;
+        lastResetTime = now;
+    }
+    
+    if (messageCount >= MAX_MESSAGES) {
+        return false;
+    }
+    
+    messageCount++;
+    return true;
+}
+</script>
 </body>
 </html>
