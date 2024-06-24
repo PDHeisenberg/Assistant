@@ -78,15 +78,15 @@
             border-color: #CCFF6F;
         }
         .input-area {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            background-color: #FFFFFF;
-            padding: 10px;
-            z-index: 1001;
-        }
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    background-color: #FFFFFF;
+    padding: 10px;
+    z-index: 1001;
+}
         #user-input {
             flex-grow: 1;
             padding: 15px;
@@ -155,29 +155,30 @@
             100% { opacity: 0; }
         }
         #message-form {
-            position: fixed;
-            bottom: 70px;
-            left: 0;
-            right: 0;
-            width: 100%;
-            max-width: 100%;
-            display: none;
-            flex-direction: column;
-            gap: 10px;
-            padding: 15px;
-            background-color: #F5F5F5;
-            border-top-left-radius: 25px;
-            border-top-right-radius: 25px;
-            z-index: 1000;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-            box-sizing: border-box;
-        }
-        #message-form.visible {
-            max-height: calc(100vh - 70px);
-            overflow-y: auto;
-        }
+    position: fixed;
+    bottom: 70px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    background-color: #F5F5F5;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    z-index: 1000;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    box-sizing: border-box;
+}
+
+#message-form.visible {
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
+}
         #message-form input, #message-form textarea {
             padding: 10px;
             border: 1px solid #D0D0D0;
@@ -211,19 +212,6 @@
             background-color: #F5F5F5;
             color: #333333;
             border: 1px solid #D0D0D0;
-        }
-        #mute-button {
-            background-color: #F5F5F5;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            margin-left: 10px;
-            font-size: 20px;
         }
         @media (max-width: 600px) {
             .chat-container {
@@ -263,10 +251,8 @@
         <div class="input-area">
             <input type="text" id="user-input" placeholder="Type your message here...">
             <button id="send-button">Send</button>
-            <button id="mute-button">🔊</button>
         </div>
     </div>
-    <audio id="audio-player" style="display: none;"></audio>
 
     <script>
         const chatMessages = document.getElementById('chat-messages');
@@ -274,8 +260,6 @@
         const sendButton = document.getElementById('send-button');
         const messageForm = document.getElementById('message-form');
         const cancelMessage = document.getElementById('cancel-message');
-        const audioPlayer = document.getElementById('audio-player');
-        const muteButton = document.getElementById('mute-button');
 
         const predefinedMessages = [
             "Tell me about Parth's professional experience",
@@ -288,7 +272,6 @@
         const TIME_WINDOW = 60000; // 1 minute in milliseconds
         let messageCount = 0;
         let lastResetTime = Date.now();
-        let isMuted = false;
 
         window.onload = function() {
             addMessageToChat('Assistant', "Hello! I'm Alfred, Parth's personal assistant. I can provide information about his experience, relay messages, and help schedule meetings. How may I assist you today?", 'assistant-message');
@@ -323,12 +306,6 @@
         });
 
         cancelMessage.addEventListener('click', hideMessageForm);
-
-        muteButton.addEventListener('click', () => {
-            isMuted = !isMuted;
-            muteButton.textContent = isMuted ? '🔇' : '🔊';
-            audioPlayer.muted = isMuted;
-        });
 
         async function sendMessage() {
             if (!checkRateLimit()) {
@@ -366,12 +343,6 @@
                         const data = await response.json();
                         chatMessages.removeChild(loadingBubble);
                         addMessageToChat('Assistant', data.reply, 'assistant-message');
-
-                        // Play audio if not muted
-                        if (!isMuted && data.audio) {
-                            audioPlayer.src = `data:audio/mp3;base64,${data.audio}`;
-                            audioPlayer.play();
-                        }
                     } catch (error) {
                         console.error('Error:', error);
                         chatMessages.removeChild(loadingBubble);
@@ -382,16 +353,16 @@
         }
 
         function showMessageForm() {
-            messageForm.style.display = 'flex';
-            setTimeout(() => {
-                messageForm.classList.add('visible');
-                window.scrollTo({
-                    top: document.body.scrollHeight,
-                    behavior: 'smooth'
-                });
-            }, 0);
-            addMessageToChat('Assistant', "Great! Please fill out the form below to send a message to Parth. We need your email so he can reply to you directly.", 'assistant-message');
-        }
+    messageForm.style.display = 'flex';
+    setTimeout(() => {
+        messageForm.classList.add('visible');
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+    }, 0);
+    addMessageToChat('Assistant', "Great! Please fill out the form below to send a message to Parth. We need your email so he can reply to you directly.", 'assistant-message');
+}
 
         function hideMessageForm() {
             messageForm.classList.remove('visible');
