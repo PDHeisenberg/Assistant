@@ -12,23 +12,39 @@ exports.handler = async function(event, context) {
   }
   try {
     const { message } = JSON.parse(event.body);
+    console.log("Received message:", message);
+
     const thread = await openai.beta.threads.create();
+    console.log("Thread created:", thread.id);
+
     await openai.beta.threads.messages.create(thread.id, {
       role: "user",
       content: message
     });
+    console.log("User message added to thread");
+
     const run = await openai.beta.threads.runs.create(thread.id, {
       assistant_id: ASSISTANT_ID,
     });
+    console.log("Run created:", run.id);
+
     let runStatus;
     do {
       runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
+      console.log("Run status:", runStatus.status);
       await new Promise(resolve => setTimeout(resolve, 1000));
     } while (runStatus.status !== "completed");
+
     const messages = await openai.beta.threads.messages.list(thread.id);
     const lastAssistantMessage = messages.data
       .filter(message => message.role === "assistant")
       .pop();
+
+    if (!lastAssistantMessage) {
+      throw new Error("No assistant message found");
+    }
+
+    console.log("Assistant reply:", lastAssistantMessage.content[0].text.value);
 
     // Generate text-to-speech audio
     const voice = new ElevenLabs({
@@ -53,7 +69,7 @@ exports.handler = async function(event, context) {
     console.error('Error:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'An error occurred while processing your request.' })
+      body: JSON.stringify({ error: error.message || 'An error occurred while processing your request.' })
     };
   }
 };
