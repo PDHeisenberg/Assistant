@@ -1,8 +1,12 @@
-[build]
+[
+build
+]
   functions = "functions"
-
-[functions]
+[
+functions
+]
   node_bundler = "esbuild"
-
-[[plugins]]
+[[
+plugins
+]]
   package = "@netlify/plugin-functions-install-core"

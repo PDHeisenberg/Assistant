@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Assistant</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@1,800,500,100,700,400,300,200,900&display=swap" rel="stylesheet">
     <style>
         body, html {
@@ -79,15 +78,15 @@
             border-color: #CCFF6F;
         }
         .input-area {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            background-color: #FFFFFF;
-            padding: 10px;
-            z-index: 1001;
-        }
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    background-color: #FFFFFF;
+    padding: 10px;
+    z-index: 1001;
+}
         #user-input {
             flex-grow: 1;
             padding: 15px;
@@ -156,29 +155,30 @@
             100% { opacity: 0; }
         }
         #message-form {
-            position: fixed;
-            bottom: 70px;
-            left: 0;
-            right: 0;
-            width: 100%;
-            max-width: 100%;
-            display: none;
-            flex-direction: column;
-            gap: 10px;
-            padding: 15px;
-            background-color: #F5F5F5;
-            border-top-left-radius: 25px;
-            border-top-right-radius: 25px;
-            z-index: 1000;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-            box-sizing: border-box;
-        }
-        #message-form.visible {
-            max-height: calc(100vh - 70px);
-            overflow-y: auto;
-        }
+    position: fixed;
+    bottom: 70px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    background-color: #F5F5F5;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    z-index: 1000;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    box-sizing: border-box;
+}
+
+#message-form.visible {
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
+}
         #message-form input, #message-form textarea {
             padding: 10px;
             border: 1px solid #D0D0D0;
@@ -213,19 +213,6 @@
             color: #333333;
             border: 1px solid #D0D0D0;
         }
-        #mute-button {
-            background-color: #F5F5F5;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            margin-left: 10px;
-            font-size: 20px;
-        }
         @media (max-width: 600px) {
             .chat-container {
                 height: 100vh;
@@ -246,41 +233,13 @@
             #send-button {
                 padding: 15px;
             }
-            #voice-mode-button {
-            background-color: #F5F5F5;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            margin-left: 10px;
-            font-size: 20px;
-        }
-        .voice-mode {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #F5F5F5;
-        }
-        .voice-mode-active .chat-interface {
-            display: none;
-        }
-        .voice-mode-active .voice-mode {
-            display: flex;
-        }
         }
     </style>
 </head>
 <body>
-    <div class="chat-interface">
-        <div class="chat-container">
-            <div id="chat-messages"></div>
-            <form id="message-form">
+    <div class="chat-container">
+        <div id="chat-messages"></div>
+        <form id="message-form">
             <input type="text" id="name" placeholder="Your Name" required>
             <input type="email" id="email" placeholder="Your Email" required>
             <textarea id="message" placeholder="Your Message" required></textarea>
@@ -292,18 +251,8 @@
         <div class="input-area">
             <input type="text" id="user-input" placeholder="Type your message here...">
             <button id="send-button">Send</button>
-            <button id="voice-mode-button"><i class="fas fa-headphones"></i></button>
         </div>
     </div>
-</div>
-<div class="voice-mode">
-    <h2>Voice Mode Active</h2>
-    <p>Speak your message or click to return to chat</p>
-    <button id="return-to-chat">Return to Chat</button>
-</div>
-
-
-    <audio id="audio-player" style="display: none;"></audio>
 
     <script>
         const chatMessages = document.getElementById('chat-messages');
@@ -311,13 +260,7 @@
         const sendButton = document.getElementById('send-button');
         const messageForm = document.getElementById('message-form');
         const cancelMessage = document.getElementById('cancel-message');
-        const audioPlayer = document.getElementById('audio-player');
-        const muteButton = document.getElementById('mute-button');
-        const voiceModeButton = document.getElementById('voice-mode-button');
-        const returnToChatButton = document.getElementById('return-to-chat');
-        const body = document.body;
-        let recognition;
-        
+
         const predefinedMessages = [
             "Tell me about Parth's professional experience",
             "I'd like to send a message to Parth",
@@ -329,7 +272,6 @@
         const TIME_WINDOW = 60000; // 1 minute in milliseconds
         let messageCount = 0;
         let lastResetTime = Date.now();
-        let isMuted = false;
 
         window.onload = function() {
             addMessageToChat('Assistant', "Hello! I'm Alfred, Parth's personal assistant. I can provide information about his experience, relay messages, and help schedule meetings. How may I assist you today?", 'assistant-message');
@@ -353,71 +295,7 @@
         userInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') sendMessage();
         });
-        voiceModeButton.addEventListener('click', toggleVoiceMode);
-        returnToChatButton.addEventListener('click', toggleVoiceMode);
 
-        function toggleVoiceMode() {
-            body.classList.toggle('voice-mode-active');
-            if (body.classList.contains('voice-mode-active')) {
-                startVoiceRecognition();
-                speakMessage("Welcome to Parth's portfolio. How may I assist you?");
-            } else {
-                stopVoiceRecognition();
-            }
-        }
-
-        function startVoiceRecognition() {
-            if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-                recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-                recognition.continuous = true;
-                recognition.interimResults = false;
-
-                recognition.onresult = function(event) {
-                    const last = event.results.length - 1;
-                    const text = event.results[last][0].transcript;
-                    console.log('Recognized: ' + text);
-                    processVoiceInput(text);
-                };
-
-                recognition.start();
-            } else {
-                console.error('Speech recognition not supported');
-                alert('Speech recognition is not supported in your browser.');
-            }
-        }
-
-        function stopVoiceRecognition() {
-            if (recognition) {
-                recognition.stop();
-            }
-        }
-
-        async function processVoiceInput(text) {
-            try {
-                const response = await fetch('/.netlify/functions/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ message: text }),
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                
-                const data = await response.json();
-                speakMessage(data.reply);
-            } catch (error) {
-                console.error('Error:', error);
-                speakMessage('I apologize, but I encountered an issue while processing your request. Could you please try again?');
-            }
-        }
-
-        function speakMessage(message) {
-            const utterance = new SpeechSynthesisUtterance(message);
-            speechSynthesis.speak(utterance);
-        }
         messageForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('name').value;
@@ -428,12 +306,6 @@
         });
 
         cancelMessage.addEventListener('click', hideMessageForm);
-
-        muteButton.addEventListener('click', () => {
-            isMuted = !isMuted;
-            muteButton.textContent = isMuted ? '🔇' : '🔊';
-            audioPlayer.muted = isMuted;
-        });
 
         async function sendMessage() {
             if (!checkRateLimit()) {
@@ -456,46 +328,41 @@
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                     
                     try {
-                const response = await fetch('/.netlify/functions/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ message }),
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                        const response = await fetch('/.netlify/functions/chat', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ message }),
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        
+                        const data = await response.json();
+                        chatMessages.removeChild(loadingBubble);
+                        addMessageToChat('Assistant', data.reply, 'assistant-message');
+                    } catch (error) {
+                        console.error('Error:', error);
+                        chatMessages.removeChild(loadingBubble);
+                        addMessageToChat('Assistant', 'I apologize, but I encountered an issue while processing your request. Could you please try again?', 'assistant-message');
+                    }
                 }
-                
-                const data = await response.json();
-                chatMessages.removeChild(loadingBubble);
-                addMessageToChat('Assistant', data.reply, 'assistant-message');
-
-                if (data.audio) {
-                    audioPlayer.src = `data:audio/mp3;base64,${data.audio}`;
-                    audioPlayer.play();
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                chatMessages.removeChild(loadingBubble);
-                addMessageToChat('Assistant', 'I apologize, but I encountered an issue while processing your request. Could you please try again?', 'assistant-message');
-            }
-        }
             }
         }
 
         function showMessageForm() {
-            messageForm.style.display = 'flex';
-            setTimeout(() => {
-                messageForm.classList.add('visible');
-                window.scrollTo({
-                    top: document.body.scrollHeight,
-                    behavior: 'smooth'
-                });
-            }, 0);
-            addMessageToChat('Assistant', "Great! Please fill out the form below to send a message to Parth. We need your email so he can reply to you directly.", 'assistant-message');
-        }
+    messageForm.style.display = 'flex';
+    setTimeout(() => {
+        messageForm.classList.add('visible');
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+    }, 0);
+    addMessageToChat('Assistant', "Great! Please fill out the form below to send a message to Parth. We need your email so he can reply to you directly.", 'assistant-message');
+}
 
         function hideMessageForm() {
             messageForm.classList.remove('visible');
@@ -560,5 +427,4 @@
         }
     </script>
 </body>
-</html> 
- 
+</html>
